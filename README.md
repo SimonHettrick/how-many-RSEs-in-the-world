@@ -11,3 +11,6 @@ Good question... very good question. There's lots, certainly, but that feels too
 * gdp.csv
   * OECD data on population Total, Million persons, 2018 or latest available across different countries. From [OECD website](https://data.oecd.org/gdp/gross-domestic-product-gdp.htm).
   * Downloaded 2 October 2020.
+* rse_groups.csv
+  * The size of 25 UK RSE Groups.
+  * Collected via interview by Simon Hettrick in January 2020.
