@@ -85,7 +85,7 @@ def researchers_in_uk(DATAFILELOC, UKRESEARCHERS):
     df_uk_research = import_csv_to_df(DATAFILELOC, UKRESEARCHERS)
 
     # First 28 rows of the csv are metadata! No, no, it's fine HESA. I've got tons of free time, don't you worry.
-    # I'
+    # Tidydata, please. Tidydata!
     df_uk_research.columns = df_uk_research.iloc[27]
     df_uk_research = df_uk_research.iloc[28:]
     df_uk_research.reset_index(drop=True, inplace=True)
@@ -93,22 +93,20 @@ def researchers_in_uk(DATAFILELOC, UKRESEARCHERS):
     # Cut to latest year
     df_uk_research = df_uk_research[df_uk_research['Academic Year']=='2018/19']
 
-    # Cut to academics and all (which includes academics)
+    # Cut to just the academics
     # Working with HESA data is like working with angry sharks. Given any freedom, you would choose not to, but sometimes
-    # there's just no option.
-    # They've encoded the data they need for filtering on the website into their datasets, so there's massive duplication
-    # which the following five lines of code are needed to remove. Sigh.
+    # you're forced into it. They've encoded the data they need for filtering on the website into their datasets, so
+    # there's massive duplication which the following five lines of code are needed to remove. Sigh.
     df_uk_research = df_uk_research[df_uk_research['Activity standard occupational classification'] == 'Total academic staff']
     df_uk_research = df_uk_research[df_uk_research['Mode of employment'] == 'All']
     df_uk_research = df_uk_research[df_uk_research['Contract marker'] == 'Academic']
     df_uk_research = df_uk_research[df_uk_research['Country of HE provider'] == 'All']
     df_uk_research = df_uk_research[df_uk_research['Region of HE provider'] == 'All']
     df_uk_research = df_uk_research[df_uk_research['HE Provider'] != 'Total']
+
     df_uk_research['Number'] = df_uk_research['Number'].astype(int)
 
     num_uk_academics = df_uk_research['Number'].sum()
-
-    print(num_uk_academics)
 
     return num_uk_academics
 
@@ -129,10 +127,11 @@ def main():
     # Number of researchers in the UK
     num_uk_academics = researchers_in_uk(DATAFILELOC, UKRESEARCHERS)
     print('There are the following number of academics in the UK: ' + str(num_uk_academics))
-    print('At a ratio of 100:1, there would be the following number of RSEs: ' + strround((num_uk_academics/100),0))
-    print('At a ratio of 20:1, there would be the following number of RSEs: ' + round(str(num_uk_academics/20),0))
-    print('At a ratio of 3:1, there would be the following number of RSEs: ' + round(str(num_uk_academics/3),0))
+    print('At a ratio of 100:1, there would be the following number of RSEs: ' + str(round(num_uk_academics/100,0)))
+    print('At a ratio of 20:1, there would be the following number of RSEs: ' + str(round(num_uk_academics/20,0)))
+    print('At a ratio of 3:1, there would be the following number of RSEs: ' + str(round(num_uk_academics/3,0)))
 
+    #
 
 if __name__ == '__main__':
     main()
