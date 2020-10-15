@@ -8,6 +8,9 @@ DATAFILELOC = './data/'
 RSEGROUPS = 'rse_groups.csv'
 UKRSE = 'association-members.csv'
 UKRESEARCHERS = 'hesa_number_of_researchers_uk.csv'
+JOBS = 'rse_like_jobs.csv'
+RSPENDING = 'research_spending.csv'
+GDP = 'gdp.csv'
 
 
 def import_csv_to_df(location, filename):
@@ -17,7 +20,7 @@ def import_csv_to_df(location, filename):
     :return: a df
     """
 
-    return pd.read_csv(location + filename)
+    return pd.read_csv(location + filename, low_memory=False)
 
 
 def export_to_csv(df, location, filename, index_write):
@@ -110,6 +113,53 @@ def researchers_in_uk(DATAFILELOC, UKRESEARCHERS):
 
     return num_uk_academics
 
+
+def get_mean_rse_like_jobs(DATAFILELOC, JOBS):
+
+    # Get the annual mean data
+    df_annuals = import_csv_to_df(DATAFILELOC, JOBS)
+    mean_annuals = round(df_annuals['fraction rse-like'].mean(),2)
+
+    return mean_annuals
+
+
+def we_are_not_that_big(DATAFILELOC, RSPENDING, GDP, num_rses_uk):
+    """
+    Both data sets are in Millions of US Dollars
+    :param DATAFILELOC:
+    :param RSPENDING:
+    :param GDP:
+    :return:
+    """
+
+    #Get data
+    df_spending = import_csv_to_df(DATAFILELOC, RSPENDING)
+    df_gdp = import_csv_to_df(DATAFILELOC, GDP)
+
+    #Cut data to 2018 and drop OECD and EU28 rows
+    df_spending = df_spending[df_spending['TIME']==2018]
+    df_spending = df_spending[df_spending['LOCATION']!='OECD']
+    df_spending = df_spending[df_spending['LOCATION'] != 'EU28']
+    df_gdp = df_gdp[df_gdp['TIME']==2018]
+    df_gdp = df_gdp[df_gdp['LOCATION'] != 'OECD']
+    df_gdp = df_gdp[df_gdp['LOCATION'] != 'EU28']
+
+    # Assume we're only half right about the number of RSEs in the UK
+    num_rses_uk = num_rses_uk/2
+
+    # Keep only countries for which I have spending and gdp data
+    df = pd.merge(df_spending, df_gdp, on='LOCATION', how='inner', suffixes=('_spend', '_gdp'))
+
+    # Work out how te UK compares to other countries
+    df['spend by gdp'] = df['Value_spend']/df['Value_gdp']
+    uk_spend_by_gdp = df.loc[df['LOCATION']=='GBR', 'spend by gdp'].tolist()[0]
+    df['spend by gdp'] = df['spend by gdp']/uk_spend_by_gdp
+    df['num rses'] = df['spend by gdp'] * num_rses_uk
+
+    print(df)
+    return
+
+
 def main():
     """
     Main function to run program
@@ -131,7 +181,13 @@ def main():
     print('At a ratio of 20:1, there would be the following number of RSEs: ' + str(round(num_uk_academics/20,0)))
     print('At a ratio of 3:1, there would be the following number of RSEs: ' + str(round(num_uk_academics/3,0)))
 
-    #
+    # Number of RSE-like jobs
+    rse_like_jobs = get_mean_rse_like_jobs(DATAFILELOC, JOBS)
+    num_rses_uk = rse_like_jobs * num_uk_academics
+    print('There are the following number of RSE-like jobs in the UK: ' + str(round(num_rses_uk,0)))
+
+    # Scale out across the world!
+    uk_as_fraction_of_world = we_are_not_that_big(DATAFILELOC, RSPENDING, GDP, num_rses_uk)
 
 if __name__ == '__main__':
     main()
