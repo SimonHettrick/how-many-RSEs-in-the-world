@@ -14,3 +14,9 @@ Good question... very good question. There's lots, certainly, but that feels too
 * rse_groups.csv
   * The size of 25 UK RSE Groups.
   * Collected via interview by Simon Hettrick in January 2020.
+* society-members.csv
+  * Members of the Society of RSE as of 6th October 2020
+* association-members.csv
+  * Members of the UK RSE Association when it closed in July 2020
+*  hesa_number_of_researchers_uk
+  * Staff numbers by Higher Education provider in the UK from [HESA website](https://www.hesa.ac.uk/data-and-analysis/staff/working-in-he).
