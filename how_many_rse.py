@@ -5,12 +5,14 @@ import pandas as pd
 import numpy as np
 
 DATAFILELOC = './data/'
+OPFILELOC = './output/'
 RSEGROUPS = 'rse_groups.csv'
 UKRSE = 'association-members.csv'
 UKRESEARCHERS = 'hesa_number_of_researchers_uk.csv'
 JOBS = 'rse_like_jobs.csv'
 RSPENDING = 'research_spending.csv'
 GDP = 'gdp.csv'
+COUNTRYCODES = 'oecd_country_codes.csv'
 
 
 def import_csv_to_df(location, filename):
@@ -123,7 +125,7 @@ def get_mean_rse_like_jobs(DATAFILELOC, JOBS):
     return mean_annuals
 
 
-def we_are_not_that_big(DATAFILELOC, RSPENDING, GDP, num_rses_uk):
+def we_are_not_that_big(DATAFILELOC, RSPENDING, GDP, num_rses_uk, OPFILELOC, COUNTRYCODES):
     """
     Both data sets are in Millions of US Dollars
     :param DATAFILELOC:
@@ -135,6 +137,8 @@ def we_are_not_that_big(DATAFILELOC, RSPENDING, GDP, num_rses_uk):
     #Get data
     df_spending = import_csv_to_df(DATAFILELOC, RSPENDING)
     df_gdp = import_csv_to_df(DATAFILELOC, GDP)
+    df_countries = import_csv_to_df(DATAFILELOC, COUNTRYCODES)
+    df_countries.columns = ['country', 'LOCATION']
 
     #Cut data to 2018 and drop OECD and EU28 rows
     df_spending = df_spending[df_spending['TIME']==2018]
@@ -150,14 +154,26 @@ def we_are_not_that_big(DATAFILELOC, RSPENDING, GDP, num_rses_uk):
     # Keep only countries for which I have spending and gdp data
     df = pd.merge(df_spending, df_gdp, on='LOCATION', how='inner', suffixes=('_spend', '_gdp'))
 
-    # Work out how te UK compares to other countries
-    df['spend by gdp'] = df['Value_spend']/df['Value_gdp']
-    uk_spend_by_gdp = df.loc[df['LOCATION']=='GBR', 'spend by gdp'].tolist()[0]
-    df['spend by gdp'] = df['spend by gdp']/uk_spend_by_gdp
-    df['num rses'] = df['spend by gdp'] * num_rses_uk
+    # Work out how the UK compares to other countries
+    df['spend by gdp per capita'] = df['Value_spend']/df['Value_gdp']
+    uk_spend_by_gdp = df.loc[df['LOCATION']=='GBR', 'spend by gdp per capita'].tolist()[0]
+    df['spend by gdp per capita'] = df['spend by gdp per capita']/uk_spend_by_gdp
+    df['num rses'] = df['spend by gdp per capita'] * num_rses_uk
 
-    print(df)
-    return
+    total_worldwide_rses = round(df['num rses'].sum(),0)
+
+    # Output the raw data
+    export_to_csv(df, OPFILELOC, 'number_rses_by_country', False)
+
+    # Pretty it up a bit for the presentation
+    df['num rses'] = round(df['num rses'],0).astype(int)
+    df = df[['LOCATION', 'num rses']]
+    df = pd.merge(df, df_countries, on='LOCATION', how='inner')
+    df = df[['country', 'num rses']]
+
+    export_to_csv(df, OPFILELOC, 'number_rses_by_country_prettified', False)
+
+    return total_worldwide_rses
 
 
 def main():
@@ -187,7 +203,8 @@ def main():
     print('There are the following number of RSE-like jobs in the UK: ' + str(round(num_rses_uk,0)))
 
     # Scale out across the world!
-    uk_as_fraction_of_world = we_are_not_that_big(DATAFILELOC, RSPENDING, GDP, num_rses_uk)
+    total_worldwide_rses = we_are_not_that_big(DATAFILELOC, RSPENDING, GDP, num_rses_uk, OPFILELOC, COUNTRYCODES)
+    print('There are the following number of RSEs in the world: ' + str(total_worldwide_rses))
 
 if __name__ == '__main__':
     main()

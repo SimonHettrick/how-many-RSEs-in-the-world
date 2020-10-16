@@ -3,11 +3,14 @@ Good question... very good question. There's lots, certainly, but that feels too
 
 # Files
 * research_spending.csv
-  * OECD data on the Gross domestic spending on R&DTotal, Million US dollars, 2018 – 2019 across different countries. From [OECD website](https://data.oecd.org/rd/gross-domestic-spending-on-r-d.htm#indicator-chart).
+  * OECD data on the Gross domestic spending on R&DTotal, Million US dollars, 2018 – 2019 across different countries. From the [OECD website](https://data.oecd.org/rd/gross-domestic-spending-on-r-d.htm#indicator-chart).
   * Downloaded 2 October 2020.
 * gdp.csv
-  * OECD data on population Total, Million persons, 2018 or latest available across different countries. From [OECD website](https://data.oecd.org/gdp/gross-domestic-product-gdp.htm).
-  * Downloaded 2 October 2020.
+  * OECD data on population Total, in US Dollars per capita, 2018 or latest available across different countries. From the [OECD website](https://data.oecd.org/gdp/gross-domestic-product-gdp.htm).
+  * Downloaded 16 October 2020.
+* oecd_country_codes.csv
+  * A list of all the countries and short country codes used to make the OECD data more readable. From the [ISO website](https://www.iso.org/obp/ui/#search).
+  * Downloaded on 16 October 2020.
 * rse_groups.csv
   * The size of 25 UK RSE Groups.
   * Collected via interview by Simon Hettrick in January 2020.
