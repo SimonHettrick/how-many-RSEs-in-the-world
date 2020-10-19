@@ -249,10 +249,13 @@ def we_are_not_that_big(DATAFILELOC, RSPENDING, SALARY, GLOBALRESEARCHERS, POPUL
     total_worldwide_rses['by spends'] = round(df['num rses_spends'].sum(),0)
     total_worldwide_rses['by researchers'] = round(df['num rses_researchers'].sum(), 0)
 
+    # Get actual country names
+    df = pd.merge(df, df_countries, on='LOCATION', how='inner')
+
     # Export results
     export_to_csv(df, OPFILELOC, 'number_rses_by_country', False)
     # Then prettyify...
-    df = df[['LOCATION', 'num rses_spends', 'num rses_researchers']]
+    df = df[['country', 'num rses_spends', 'num rses_researchers']]
     df['num rses_spends'].replace(np.nan, 'NO DATA', regex=True, inplace=True)
     df['num rses_researchers'].replace(np.nan, 'NO DATA', regex=True, inplace=True)
     export_to_csv(df, OPFILELOC, 'number_rses_by_country_prettified', False)
