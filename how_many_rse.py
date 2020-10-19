@@ -11,7 +11,9 @@ UKRSE = 'association-members.csv'
 UKRESEARCHERS = 'hesa_number_of_researchers_uk.csv'
 JOBS = 'rse_like_jobs.csv'
 RSPENDING = 'research_spending.csv'
-GDP = 'gdp.csv'
+SALARY = 'salary.csv'
+GLOBALRESEARCHERS = 'global_researchers.csv'
+POPULATION = 'population.csv'
 COUNTRYCODES = 'oecd_country_codes.csv'
 
 
@@ -35,6 +37,15 @@ def export_to_csv(df, location, filename, index_write):
     return df.to_csv(location + filename + '.csv', index=index_write)
 
 def rse_group_average(DATAFILELOC, RSEGROUPS,num_of_groups_uk):
+    """
+    Takes the data collected from UK RSE Groups, calculates the median group size, uses that data to make up for
+    the missing groups (I got data from 25 of the 29 of them) and then calculates the total number of people in UK RSE
+    Groups.
+    :param DATAFILELOC: location of data files
+    :param RSEGROUPS: csv with data on size of RSE Groups
+    :param num_of_groups_uk: the number of RSE Groups in the UK
+    :return: the total number of RSEs in UK RSE Groups
+    """
 
     # Get data on RSE Groups
     df_rse_groups = import_csv_to_df(DATAFILELOC, RSEGROUPS)
@@ -58,6 +69,14 @@ def rse_group_average(DATAFILELOC, RSEGROUPS,num_of_groups_uk):
 
 
 def rses_in_association(DATAFILELOC, UKRSE):
+    """
+    Takes all the post-@-part of the email addresses of people signed up to the UKRSE Association, drops all the
+    obviously non-UK email addresses, drops half of the .com and .org ones too. Then counts the people who are left to
+    say how many UK RSEs are in the UK RSE Association.
+    :param DATAFILELOC: location of data files
+    :param UKRSE: csv of last parts of email addresses of people signed up to UKRSE Association
+    :return: the total number of RSEs in the UKRSE Association
+    """
 
     # Get data on UKRSE Association
     df_ukrse = import_csv_to_df(DATAFILELOC, UKRSE)
@@ -84,7 +103,14 @@ def rses_in_association(DATAFILELOC, UKRSE):
 
     return uk_rses_in_ukrse
 
+
 def researchers_in_uk(DATAFILELOC, UKRESEARCHERS):
+    """
+    Takes data from HESA and does a load of cleaning to
+    :param DATAFILELOC: location of data files
+    :param UKRESEARCHERS: csv of researchers in UK from HESA website
+    :return: the total number of researchers in the UK
+    """
 
     # Get data on UK researchers
     df_uk_research = import_csv_to_df(DATAFILELOC, UKRESEARCHERS)
@@ -117,6 +143,13 @@ def researchers_in_uk(DATAFILELOC, UKRESEARCHERS):
 
 
 def get_mean_rse_like_jobs(DATAFILELOC, JOBS):
+    """
+    Very simple function to calculate the mean of a few numbers related to
+    RSE like jobs
+    :param DATAFILELOC: location of data files
+    :param JOBS: data on the mean fraction of jobs advertised on jobs.ac.uk that are RSE like
+    :return: the mean of a list of fractions
+    """
 
     # Get the annual mean data
     df_annuals = import_csv_to_df(DATAFILELOC, JOBS)
@@ -125,52 +158,103 @@ def get_mean_rse_like_jobs(DATAFILELOC, JOBS):
     return mean_annuals
 
 
-def we_are_not_that_big(DATAFILELOC, RSPENDING, GDP, num_rses_uk, OPFILELOC, COUNTRYCODES):
+def we_are_not_that_big(DATAFILELOC, RSPENDING, SALARY, GLOBALRESEARCHERS, POPULATION, num_rses_uk, OPFILELOC, COUNTRYCODES):
     """
-    Both data sets are in Millions of US Dollars
-    :param DATAFILELOC:
-    :param RSPENDING:
-    :param GDP:
-    :return:
+    Calculates the number of RSEs worldwide. It calculates compares research spend and average salary to the UK, then
+    compares number of researchers employed in the country to the UK, calculates the fractional difference between the
+    UK and each country, then multiplies this by the (pretty well) understood number of RSEs in the UK.
+    :param DATAFILELOC: location of data files
+    :param RSPENDING: csv of research spending per country
+    :param SALARY: csv of average salary per country
+    :param GLOBALRESEARCHERS: csv of number of researchers per country (as percentage of total population)
+    :param POPULATION: csv of population per country
+    :param num_rses_uk: known number of RSEs in the UK
+    :param OPFILELOC: location of output files
+    :param COUNTRYCODES: csv of short country codes and full country name
+    :return: a dict containing two values, each the number of RSEs in the world as calculated by one of the two methods
     """
 
     #Get data
     df_spending = import_csv_to_df(DATAFILELOC, RSPENDING)
-    df_gdp = import_csv_to_df(DATAFILELOC, GDP)
+    df_salary = import_csv_to_df(DATAFILELOC, SALARY)
+    df_researchers = import_csv_to_df(DATAFILELOC, GLOBALRESEARCHERS)
+    df_pop = import_csv_to_df(DATAFILELOC, POPULATION)
     df_countries = import_csv_to_df(DATAFILELOC, COUNTRYCODES)
     df_countries.columns = ['country', 'LOCATION']
 
-    #Cut data to 2018 and drop OECD and EU28 rows
-    df_spending = df_spending[df_spending['TIME']==2018]
+    #Cut data to 2017 (the most recent year with the most data) and drop OECD and EU28 rows
+    # Set the year of interest
+    year_int = 2017
+    df_spending = df_spending[df_spending['TIME']==year_int]
+    df_spending = df_spending[df_spending['MEASURE']=='MLN_USD']
     df_spending = df_spending[df_spending['LOCATION']!='OECD']
     df_spending = df_spending[df_spending['LOCATION'] != 'EU28']
-    df_gdp = df_gdp[df_gdp['TIME']==2018]
-    df_gdp = df_gdp[df_gdp['LOCATION'] != 'OECD']
-    df_gdp = df_gdp[df_gdp['LOCATION'] != 'EU28']
+    df_salary = df_salary[df_salary['TIME']==year_int]
+    df_researchers = df_researchers[df_researchers['TIME'] == year_int]
+    df_researchers = df_researchers[df_researchers['SUBJECT'] == 'TOT']
+    df_researchers = df_researchers[df_researchers['MEASURE'] == '1000EMPLOYED']
+    df_researchers = df_researchers[df_researchers['LOCATION']!='OECD']
+    df_researchers = df_researchers[df_researchers['LOCATION'] != 'EU28']
+    df_pop = df_pop[df_pop['TIME']==year_int]
+    df_pop = df_pop[df_pop['SUBJECT']=='TOT']
+    df_pop = df_pop[df_pop['MEASURE'] == 'MLN_PER']
+
+    # No salary data for China in OECD data, so have to add it (pinch of salt needed here)
+    # Average salary in China in 2017 (https://www.statista.com/statistics/278349/average-annual-salary-of-an-employee-in-china/#:~:text=In%202018%2C%20an%20employee%20in,yuan%20on%20average%20in%202017.)
+    av_salary = 74318
+    # USD to CNY exchange rate on 31 December 2017 (https://www.xe.com/currencytables/?from=USD&date=2017-12-31)
+    exg_rate = 0.1537053666
+    av_salary = av_salary * exg_rate
+    # Create dataframe
+    salary_columns = df_salary.columns
+    df_china = pd.DataFrame(columns=salary_columns)
+    df_china.loc[0] = ['CHN','AVWAGE','TOT','USD',np.NaN,'2017',av_salary,np.NaN]
+    # Add China data
+    df_salary = df_salary.append(df_china, ignore_index=True)
 
     # Assume we're only half right about the number of RSEs in the UK
     num_rses_uk = num_rses_uk/2
 
-    # Keep only countries for which I have spending and gdp data
-    df = pd.merge(df_spending, df_gdp, on='LOCATION', how='inner', suffixes=('_spend', '_gdp'))
+    # Keep only countries for which I have spending and salary data
+    df_spends = pd.merge(df_spending, df_salary, on='LOCATION', how='inner', suffixes=('_spend', '_salary'))
 
-    # Work out how the UK compares to other countries
-    df['spend by gdp per capita'] = df['Value_spend']/df['Value_gdp']
-    uk_spend_by_gdp = df.loc[df['LOCATION']=='GBR', 'spend by gdp per capita'].tolist()[0]
-    df['spend by gdp per capita'] = df['spend by gdp per capita']/uk_spend_by_gdp
-    df['num rses'] = df['spend by gdp per capita'] * num_rses_uk
+    # Calculate scaling fraction
+    df_spends['spend/salary'] = df_spends['Value_spend'] / df_spends['Value_salary']
+    uk_spend = df_spends.loc[df_spends['LOCATION'] == 'GBR', 'spend/salary'].tolist()[0]
+    df_spends['fraction_spends'] = df_spends['spend/salary'] / uk_spend
+    df_spends['num rses_spends'] = df_spends['fraction_spends'] * num_rses_uk
 
-    total_worldwide_rses = round(df['num rses'].sum(),0)
+    # Keep only countries where I have percentage of researchers and population
+    df_people = pd.merge(df_researchers, df_pop, on='LOCATION', how='inner', suffixes=('_rschrs', '_pop'))
 
-    # Output the raw data
+    # Calculate scaling fraction
+    # Researcher data is per 1000 employed, population data is in millions of people, so...
+    df_people['Value_rschrs'] = df_people['Value_rschrs']*1000
+    df_people['MEASURE_rschrs'] = '1000000EMPLOYED'
+    df_people['tot_researchers'] = df_people['Value_rschrs'] * df_people['Value_pop']
+    uk_researchers = df_people.loc[df_people['LOCATION'] == 'GBR', 'tot_researchers'].tolist()[0]
+    df_people['fraction_researchers'] = df_people['tot_researchers'] / uk_researchers
+    df_people['num rses_researchers'] = df_people['fraction_researchers'] * num_rses_uk
+
+    # Stick into a df
+    df = pd.merge(df_spends, df_people, on='LOCATION', how='outer')
+    df.sort_values(by='num rses_researchers', ascending=False, inplace=True)
+
+    # Clean up numbers
+    df['num rses_spends'] = round(df['num rses_spends'], 0)
+    df['num rses_researchers'] = round(df['num rses_researchers'], 0)
+
+    # Calculate the total number of RSEs in the world
+    total_worldwide_rses = {}
+    total_worldwide_rses['by spends'] = round(df['num rses_spends'].sum(),0)
+    total_worldwide_rses['by researchers'] = round(df['num rses_researchers'].sum(), 0)
+
+    # Export results
     export_to_csv(df, OPFILELOC, 'number_rses_by_country', False)
-
-    # Pretty it up a bit for the presentation
-    df['num rses'] = round(df['num rses'],0).astype(int)
-    df = df[['LOCATION', 'num rses']]
-    df = pd.merge(df, df_countries, on='LOCATION', how='inner')
-    df = df[['country', 'num rses']]
-
+    # Then prettyify...
+    df = df[['LOCATION', 'num rses_spends', 'num rses_researchers']]
+    df['num rses_spends'].replace(np.nan, 'NO DATA', regex=True, inplace=True)
+    df['num rses_researchers'].replace(np.nan, 'NO DATA', regex=True, inplace=True)
     export_to_csv(df, OPFILELOC, 'number_rses_by_country_prettified', False)
 
     return total_worldwide_rses
@@ -203,8 +287,11 @@ def main():
     print('There are the following number of RSE-like jobs in the UK: ' + str(round(num_rses_uk,0)))
 
     # Scale out across the world!
-    total_worldwide_rses = we_are_not_that_big(DATAFILELOC, RSPENDING, GDP, num_rses_uk, OPFILELOC, COUNTRYCODES)
-    print('There are the following number of RSEs in the world: ' + str(total_worldwide_rses))
+    total_worldwide_rses = we_are_not_that_big(DATAFILELOC, RSPENDING, SALARY, GLOBALRESEARCHERS, POPULATION, num_rses_uk, OPFILELOC, COUNTRYCODES)
+    print('There are the following number of RSEs in the world: ' + str(total_worldwide_rses['by spends']) +
+          ' calculated by research spend')
+    print('There are the following number of RSEs in the world: ' + str(total_worldwide_rses['by researchers']) +
+          ' calculated by number of researchers')
 
 if __name__ == '__main__':
     main()

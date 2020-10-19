@@ -1,38 +1,42 @@
-country,num rses
-Austria,3357
-Belgium,3688
-Canada,6962
-Czechia,2417
-Denmark,2091
-Finland,1842
-France,17800
-Germany,31212
-Greece,1537
-Hungary,1849
-Iceland,87
-Ireland,611
-Italy,10175
-Japan,55129
-Korea (the Republic of),29809
-Luxembourg,89
-Mexico,4766
-Netherlands (the),4537
-Norway,1335
-Poland,5878
-Portugal,1722
-Slovakia,601
-Spain,7086
-Sweden,4176
-Turkey,10879
-United Kingdom of Great Britain and Northern Ireland (the),14110
-United States of America (the),115275
-Chile,812
-Estonia,224
-Israel,5343
-Romania,1130
-Russian Federation (the),16583
-Singapore,1285
-Slovenia,486
-Latvia,148
-Lithuania,321
-Colombia,1639
+LOCATION,num rses_spends,num rses_researchers
+CHN,510086.0,73134.0
+USA,113628.0,69426.0
+JPN,60334.0,29383.0
+RUS,NO DATA,19036.0
+DEU,32575.0,18143.0
+KOR,30264.0,17183.0
+FRA,18227.0,16431.0
+GBR,14110.0,14110.0
+ITA,11096.0,7825.0
+TUR,NO DATA,7464.0
+ESP,7264.0,7400.0
+CAN,7212.0,7149.0
+POL,5521.0,6259.0
+NLD,4223.0,3625.0
+SWE,5022.0,3399.0
+BEL,3564.0,2986.0
+ARG,NO DATA,2950.0
+PRT,2224.0,2231.0
+AUT,3494.0,2192.0
+GRC,1658.0,2089.0
+DNK,2162.0,2073.0
+FIN,2044.0,1857.0
+CHE,3708.0,1800.0
+CZE,3435.0,1796.0
+NOR,1712.0,1495.0
+HUN,2151.0,1413.0
+IRL,1233.0,1352.0
+NZL,785.0,1127.0
+SGP,NO DATA,973.0
+ROU,NO DATA,920.0
+SVK,870.0,808.0
+CHL,771.0,469.0
+SVN,465.0,450.0
+LTU,415.0,423.0
+EST,275.0,225.0
+LVA,141.0,177.0
+LUX,156.0,94.0
+ISL,76.0,82.0
+AUS,5304.0,NO DATA
+MEX,6149.0,NO DATA
+ISR,5542.0,NO DATA
