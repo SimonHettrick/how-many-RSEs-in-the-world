@@ -28,10 +28,12 @@ Good question... very good question. There's lots, certainly, but that feels too
   * Data from a currently not-shared project investigating the number of RSE-like jobs in the UK comprising the fraction
   of jobs that are RSE-like from 2014 to 2020.
   * Downloaded 15 October 2020
+* salary.csv
+  * Average salary in differnt countries. From [OECD website](https://data.oecd.org/earnwage/average-wages.htm#indicator-chart)
 
+# What's it about?
 
+I was asked to do a talk for [SORSE](https://sorse.github.io/). I chose to do it on the number of RSEs, because I thought
+it'd be fun. It was. Apart from some of the data identification/cleaning.
 
-
-
-*  hesa_number_of_researchers_uk
-  * Staff numbers by Higher Education provider in the UK from [HESA website](https://www.hesa.ac.uk/data-and-analysis/staff/working-in-he).
+The slides are on my [Slides account](http://bit.ly/how-many-rses2020).
