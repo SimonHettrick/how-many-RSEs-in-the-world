@@ -33,7 +33,7 @@ Good question... very good question. There's lots, certainly, but that feels too
 
 # What's it about?
 
-I was asked to do a talk for [SORSE](https://sorse.github.io/). I chose to do it on the number of RSEs, because I thought
+I was asked to do a talk for [SORSE](https://sorse.github.io/). I chose to do it on the number of RSEs in the world, because I thought
 it'd be fun. It was. Apart from some of the data identification/cleaning.
 
 The slides are on my [Slides account](http://bit.ly/how-many-rses2020).
