@@ -29,7 +29,7 @@ Good question... very good question. There's lots, certainly, but that feels too
   of jobs that are RSE-like from 2014 to 2020.
   * Downloaded 15 October 2020
 * salary.csv
-  * Average salary in differnt countries. From [OECD website](https://data.oecd.org/earnwage/average-wages.htm#indicator-chart)
+  * Average salary in different countries. From [OECD website](https://data.oecd.org/earnwage/average-wages.htm#indicator-chart)
 
 # What's it about?
 

@@ -36,6 +36,7 @@ def export_to_csv(df, location, filename, index_write):
 
     return df.to_csv(location + filename + '.csv', index=index_write)
 
+
 def rse_group_average(DATAFILELOC, RSEGROUPS,num_of_groups_uk):
     """
     Takes the data collected from UK RSE Groups, calculates the median group size, uses that data to make up for
@@ -98,7 +99,6 @@ def rses_in_association(DATAFILELOC, UKRSE):
 
     # Calculate how many members were in the UK by keeping all the .uk and .scot, but only
     # half of the .com and .org
-
     uk_rses_in_ukrse = uks + (coms_orgs/2)
 
     return uk_rses_in_ukrse
